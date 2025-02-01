@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizon Movies- Online Movie Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: aqua;
+            --secondary-color: #141414;
+            --text-color: #ffffff;
+            --gray-light: #b3b3b3;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .header {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                        url('/api/placeholder/1920/400');
+            background-size: cover;
+            background-position: center;
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-light);
+        }
+
+        .search-results {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 2rem;
+        }
+
+        .movie-card {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(229, 9, 20, 0.3);
+        }
+
+        .movie-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .movie-card:hover .movie-poster {
+            transform: scale(1.05);
+        }
+
+        .movie-info {
+            padding: 1.2rem;
+        }
+
+        .movie-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--gray-light);
+            font-size: 0.9rem;
+        }
+
+        .rating {
+            color: var(--primary-color);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .iframe-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            border: none;
+            background: #1e1e1e;
+        }
+
+        .disclaimer {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem;
+            text-align: center;
+            color: var(--gray-light);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            border-radius: 8px;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-light);
+        }
+
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .search-results {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 1rem;
+            }
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="/" class="logo">Horizon Movies</a>
+            <div class="nav-links">
+                <a href="about.html">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="header">
+        <h1>Discover Your Next Favorite Movie</h1>
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchQuery" class="search-box" placeholder="Search for movies...">
+        </div>
+    </header>
+
+    <div class="search-results" id="searchResults"></div>
+    <div class="iframe-container" id="iframeContainer"></div>
+
+    <script>
+        const TMDB_API_KEY = '789c2869ddf724127863ae4e4780f6b6';
+        const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+
+        let searchTimeout;
+        const searchInput = document.getElementById('searchQuery');
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            if (this.value) {
+                document.getElementById("searchResults").innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                `;
+                searchTimeout = setTimeout(() => searchMovies(), 500);
+            }
+        });
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                clearTimeout(searchTimeout);
+                searchMovies();
+            }
+        });
+
+        function searchMovies() {
+            const query = document.getElementById("searchQuery").value;
+            if (query) {
+                fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let resultsContainer = document.getElementById("searchResults");
+                        resultsContainer.innerHTML = "";
+                        
+                        if (data.results.length === 0) {
+                            resultsContainer.innerHTML = `
+                                <div class="no-results">
+                                    <i class="fas fa-film" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-color);"></i>
+                                    <h3>No movies found</h3>
+                                    <p>Try different keywords</p>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        data.results.forEach(movie => {
+                            const posterPath = movie.poster_path 
+                                ? TMDB_IMAGE_BASE_URL + movie.poster_path
+                                : '/api/placeholder/220/330';
+                            
+                            const releaseYear = movie.release_date 
+                                ? new Date(movie.release_date).getFullYear()
+                                : 'N/A';
+
+                            let movieCard = document.createElement("div");
+                            movieCard.className = "movie-card";
+                            movieCard.innerHTML = `
+                                <img class="movie-poster" src="${posterPath}" alt="${movie.title}">
+                                <div class="movie-info">
+                                    <div class="movie-title">${movie.title}</div>
+                                    <div class="movie-meta">
+                                        <span>${releaseYear}</span>
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            ${movie.vote_average.toFixed(1)}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            movieCard.onclick = () => streamMovie(movie.id, movie.title);
+                            resultsContainer.appendChild(movieCard);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById("searchResults").innerHTML = `
+                            <div class="no-results">
+                                <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-color);"></i>
+                                <h3>An error occurred</h3>
+                                <p>Please try again later</p>
+                            </div>
+                        `;
+                    });
+            }
+        }
+
+        function streamMovie(movieId, movieTitle) {
+            document.getElementById("searchResults").innerHTML = "";
+            document.getElementById("iframeContainer").innerHTML = `
+                <h2 style="margin-bottom: 1rem;">${movieTitle}</h2>
+                <div class="video-wrapper">
+                    <iframe 
+                        src="https://vidbinge.dev/embed/movie/${movieId}"
+                        allowfullscreen 
+                        sandbox="allow-same-origin allow-forms allow-scripts allow-storage-access-by-user-activation allow-presentation">
+                    </iframe>
+                </div>
+                <div class="disclaimer">
+                    <i class="fas fa-info-circle"></i>
+                    Notice: The advertisements displayed on this page are provided by third-party publishers and are not under our control. 
+                    We are not responsible for their content or placement.
+                </div>
+            `;
+            document.getElementById("iframeContainer").scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
